@@ -1,0 +1,16 @@
+{
+  "version": "2.0.0",
+  "type": "shell",
+  "echoCommand": true,
+  "cwd": "${workspaceFolder}",
+  "tasks": [
+    {
+      "label": "build linux",
+      "command": "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o '${workspaceFolder}/bin/'",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
