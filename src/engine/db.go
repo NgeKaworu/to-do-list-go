@@ -79,22 +79,6 @@ func (d *DbEngine) Open(mg, mdb string, initdb bool) error {
 			log.Println(err)
 		}
 
-		// 标签表
-		info := session.Database(mdb).Collection(models.TTag)
-		indexView = info.Indexes()
-		_, err = indexView.CreateMany(context.Background(), []mongo.IndexModel{
-			{Keys: bsonx.Doc{bsonx.Elem{Key: "name", Value: bsonx.Int32(-1)}}},
-			{Keys: bsonx.Doc{bsonx.Elem{Key: "uid", Value: bsonx.Int32(1)}}},
-			{Keys: bsonx.Doc{
-				bsonx.Elem{Key: "uid", Value: bsonx.Int32(1)},
-				bsonx.Elem{Key: "name", Value: bsonx.Int32(1)},
-			}, Options: options.Index().SetUnique(true)},
-			{Keys: bsonx.Doc{bsonx.Elem{Key: "createAt", Value: bsonx.Int32(-1)}}},
-		})
-		if err != nil {
-			log.Println(err)
-		}
-
 	}
 
 	return nil

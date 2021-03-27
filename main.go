@@ -44,11 +44,6 @@ func main() {
 	}
 
 	router := httprouter.New()
-	// tag ctrl
-	router.POST("/v1/tag/create", auth.IsLogin(eng.AddTag))
-	router.PUT("/v1/tag/update", auth.IsLogin(eng.SetTag))
-	router.GET("/v1/tag/list", auth.IsLogin(eng.ListTag))
-	router.DELETE("/v1/tag/:id", auth.IsLogin(eng.RemoveTag))
 	//record ctrl
 	router.POST("/v1/record/create", auth.IsLogin(eng.AddRecord))
 	router.PUT("/v1/record/update", auth.IsLogin(eng.SetRecord))
