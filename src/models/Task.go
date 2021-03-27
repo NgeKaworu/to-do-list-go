@@ -6,8 +6,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// TTask 记录表
-const TRecord = "t_task"
+// TTask 任务表
+const TTask = "t_task"
 
 // Task 任务
 type Task struct {
@@ -18,6 +18,7 @@ type Task struct {
 	Title    *string             `json:"title,omitempty" bson:"title,omitempty"`       // 任务标题
 	Done     *bool               `json:"done,omitempty" bson:"done,omitempty"`         // 任务是否完成
 	SubTask  *[]SubTask          `json:"subTask,omitempty" bson:"subTask,omitempty"`   // 子任务
+	Level    *int64              `json:"level,omitempty" bson:"level,omitempty"`       // 优先级
 }
 
 // SubTask 子任务

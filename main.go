@@ -45,11 +45,10 @@ func main() {
 
 	router := httprouter.New()
 	//record ctrl
-	router.POST("/v1/record/create", auth.IsLogin(eng.AddRecord))
-	router.PUT("/v1/record/update", auth.IsLogin(eng.SetRecord))
-	router.GET("/v1/record/list", auth.IsLogin(eng.ListRecord))
-	router.DELETE("/v1/record/:id", auth.IsLogin(eng.RemoveRecord))
-	router.POST("/v1/record/statistic", auth.IsLogin(eng.StatisticRecord))
+	router.POST("/v1/record/create", auth.IsLogin(eng.AddTask))
+	router.PUT("/v1/record/update", auth.IsLogin(eng.SetTask))
+	router.GET("/v1/record/list", auth.IsLogin(eng.ListTask))
+	router.DELETE("/v1/record/:id", auth.IsLogin(eng.RemoveTask))
 
 	srv := &http.Server{Handler: cors.CORS(router), ErrorLog: nil}
 	srv.Addr = *addr

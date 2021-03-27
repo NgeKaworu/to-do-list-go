@@ -67,12 +67,12 @@ func (d *DbEngine) Open(mg, mdb string, initdb bool) error {
 		defer session.Disconnect(context.Background())
 
 		// 记录表
-		t := session.Database(mdb).Collection(models.TRecord)
+		t := session.Database(mdb).Collection(models.TTask)
 		indexView := t.Indexes()
 		_, err := indexView.CreateMany(context.Background(), []mongo.IndexModel{
 			{Keys: bsonx.Doc{bsonx.Elem{Key: "uid", Value: bsonx.Int32(1)}}},
-			{Keys: bsonx.Doc{bsonx.Elem{Key: "tid", Value: bsonx.Int32(1)}}},
 			{Keys: bsonx.Doc{bsonx.Elem{Key: "createAt", Value: bsonx.Int32(-1)}}},
+			{Keys: bsonx.Doc{bsonx.Elem{Key: "updateAt", Value: bsonx.Int32(-1)}}},
 		})
 
 		if err != nil {

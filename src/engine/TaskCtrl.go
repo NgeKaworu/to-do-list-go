@@ -17,8 +17,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// AddRecord 添加记录
-func (d *DbEngine) AddRecord(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+// AddTask 添加记录
+func (d *DbEngine) AddTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	uid, err := primitive.ObjectIDFromHex(r.Header.Get("uid"))
 	if err != nil {
 		resultor.RetFail(w, err.Error())
@@ -52,12 +52,12 @@ func (d *DbEngine) AddRecord(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	t := d.GetColl(models.TRecord)
+	t := d.GetColl(models.TTask)
 	var deration time.Duration
 
 	last := t.FindOne(context.Background(), bson.M{"uid": uid}, options.FindOne().SetSort(bson.M{"createAt": -1}))
 	if last.Err() == nil {
-		var record models.Record
+		var record models.Task
 		err = last.Decode(&record)
 		if err == nil {
 			deration = time.Now().Local().Sub(*record.CreateAt)
@@ -77,8 +77,8 @@ func (d *DbEngine) AddRecord(w http.ResponseWriter, r *http.Request, ps httprout
 	resultor.RetOk(w, res.InsertedID.(primitive.ObjectID).Hex())
 }
 
-// SetRecord 更新记录
-func (d *DbEngine) SetRecord(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+// SetTask 更新记录
+func (d *DbEngine) SetTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	uid, err := primitive.ObjectIDFromHex(r.Header.Get("uid"))
 	if err != nil {
 		resultor.RetFail(w, err.Error())
@@ -113,7 +113,7 @@ func (d *DbEngine) SetRecord(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	t := d.GetColl(models.TRecord)
+	t := d.GetColl(models.TTask)
 	p["uid"] = uid
 	p["updateAt"] = time.Now().Local()
 
@@ -132,8 +132,8 @@ func (d *DbEngine) SetRecord(w http.ResponseWriter, r *http.Request, ps httprout
 	resultor.RetOk(w, "修改成功")
 }
 
-// RemoveRecord 删除记录
-func (d *DbEngine) RemoveRecord(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+// RemoveTask 删除记录
+func (d *DbEngine) RemoveTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	uid, err := primitive.ObjectIDFromHex(r.Header.Get("uid"))
 	if err != nil {
 		resultor.RetFail(w, err.Error())
@@ -145,7 +145,7 @@ func (d *DbEngine) RemoveRecord(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	t := d.GetColl(models.TRecord)
+	t := d.GetColl(models.TTask)
 
 	res := t.FindOneAndDelete(context.Background(), bson.M{"_id": id, "uid": uid})
 
@@ -157,8 +157,8 @@ func (d *DbEngine) RemoveRecord(w http.ResponseWriter, r *http.Request, ps httpr
 	resultor.RetOk(w, "删除成功")
 }
 
-// ListRecord record列表
-func (d *DbEngine) ListRecord(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+// ListTask record列表
+func (d *DbEngine) ListTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	q := r.URL.Query()
 	l := q.Get("limit")
 	s := q.Get("skip")
@@ -172,7 +172,7 @@ func (d *DbEngine) ListRecord(w http.ResponseWriter, r *http.Request, ps httprou
 	limit, _ := strconv.ParseInt(l, 10, 64)
 	skip, _ := strconv.ParseInt(s, 10, 64)
 
-	t := d.GetColl(models.TRecord)
+	t := d.GetColl(models.TTask)
 
 	cur, err := t.Find(context.Background(), bson.M{
 		"uid": uid,
@@ -183,7 +183,7 @@ func (d *DbEngine) ListRecord(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	list := make([]models.Record, 0)
+	list := make([]models.Task, 0)
 
 	err = cur.All(context.Background(), &list)
 	if err != nil {
