@@ -182,5 +182,12 @@ func (d *DbEngine) ListTask(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	resultor.RetOk(w, list)
+	total, err := t.CountDocuments(context.Background(), bson.M{})
+
+	if err != nil {
+		resultor.RetFail(w, err)
+		return
+	}
+
+	resultor.RetOkWithTotal(w, list, total)
 }
