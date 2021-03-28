@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 
@@ -30,7 +31,7 @@ func (a *Auth) IsLogin(next httprouter.Handle) httprouter.Handle {
 			// Request Basic Authentication otherwise
 			w.Header().Set("WWW-Authenticate", "Bearer realm=Restricted")
 			w.WriteHeader(http.StatusUnauthorized)
-			resultor.RetFail(w, "token is empty")
+			resultor.RetFail(w, errors.New("token is empty"))
 			return
 		}
 		url := *a.UCHost + "/isLogin"
@@ -39,7 +40,7 @@ func (a *Auth) IsLogin(next httprouter.Handle) httprouter.Handle {
 			// Request Basic Authentication otherwise
 			w.Header().Set("WWW-Authenticate", "Bearer realm=Restricted")
 			w.WriteHeader(http.StatusUnauthorized)
-			resultor.RetFail(w, "invalidate request")
+			resultor.RetFail(w, errors.New("invalidate request"))
 			return
 		}
 
@@ -52,7 +53,7 @@ func (a *Auth) IsLogin(next httprouter.Handle) httprouter.Handle {
 		if err != nil {
 			w.Header().Set("WWW-Authenticate", "Bearer realm=Restricted")
 			w.WriteHeader(http.StatusUnauthorized)
-			resultor.RetFail(w, "invalidate uc reqest")
+			resultor.RetFail(w, errors.New("invalidate uc reqest"))
 			return
 		}
 
@@ -64,7 +65,7 @@ func (a *Auth) IsLogin(next httprouter.Handle) httprouter.Handle {
 		if err != nil {
 			w.Header().Set("WWW-Authenticate", "Bearer realm=Restricted")
 			w.WriteHeader(http.StatusUnauthorized)
-			resultor.RetFail(w, "invalidate uc response")
+			resultor.RetFail(w, errors.New("invalidate uc response"))
 			return
 		}
 
@@ -74,7 +75,7 @@ func (a *Auth) IsLogin(next httprouter.Handle) httprouter.Handle {
 		if err != nil {
 			w.Header().Set("WWW-Authenticate", "Bearer realm=Restricted")
 			w.WriteHeader(http.StatusUnauthorized)
-			resultor.RetFail(w, "json params fail")
+			resultor.RetFail(w, errors.New("json params fail"))
 			return
 		}
 
@@ -84,7 +85,7 @@ func (a *Auth) IsLogin(next httprouter.Handle) httprouter.Handle {
 		} else {
 			w.Header().Set("WWW-Authenticate", "Bearer realm=Restricted")
 			w.WriteHeader(http.StatusUnauthorized)
-			resultor.RetFail(w, p["errMsg"].(string))
+			resultor.RetFail(w, errors.New(p["errMsg"].(string)))
 			return
 		}
 

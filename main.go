@@ -24,10 +24,10 @@ func init() {
 
 func main() {
 	var (
-		addr   = flag.String("l", ":8031", "绑定Host地址")
+		addr   = flag.String("l", ":8041", "绑定Host地址")
 		dbinit = flag.Bool("i", false, "init database flag")
 		mongo  = flag.String("m", "mongodb://localhost:27017", "mongod addr flag")
-		db     = flag.String("db", "time-mgt", "database name")
+		db     = flag.String("db", "to-do-list", "database name")
 		ucHost = flag.String("uc", "http://localhost:8011", "user center host")
 	)
 	flag.Parse()
@@ -44,11 +44,11 @@ func main() {
 	}
 
 	router := httprouter.New()
-	//record ctrl
-	router.POST("/v1/record/create", auth.IsLogin(eng.AddTask))
-	router.PUT("/v1/record/update", auth.IsLogin(eng.SetTask))
-	router.GET("/v1/record/list", auth.IsLogin(eng.ListTask))
-	router.DELETE("/v1/record/:id", auth.IsLogin(eng.RemoveTask))
+	//task ctrl
+	router.POST("/v1/task/create", auth.IsLogin(eng.AddTask))
+	router.PUT("/v1/task/update", auth.IsLogin(eng.SetTask))
+	router.GET("/v1/task/list", auth.IsLogin(eng.ListTask))
+	router.DELETE("/v1/task/:id", auth.IsLogin(eng.RemoveTask))
 
 	srv := &http.Server{Handler: cors.CORS(router), ErrorLog: nil}
 	srv.Addr = *addr

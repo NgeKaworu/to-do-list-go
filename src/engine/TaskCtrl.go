@@ -2,6 +2,7 @@ package engine
 
 import (
 	"context"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -21,56 +22,45 @@ import (
 func (d *DbEngine) AddTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	uid, err := primitive.ObjectIDFromHex(r.Header.Get("uid"))
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 	if len(body) == 0 {
-		resultor.RetFail(w, "not has body")
+		resultor.RetFail(w, errors.New("not has body"))
 		return
 	}
 
 	p, err := parsup.ParSup().ConvJSON(body)
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 
 	err = utils.Required(p, map[string]string{
-		"event": "请填写发生了什么",
-		"tid":   "请至少选一个标签",
+		"title": "请填写任务名",
+		"level": "请选一个优先级",
 	})
 
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 
 	t := d.GetColl(models.TTask)
-	var deration time.Duration
-
-	last := t.FindOne(context.Background(), bson.M{"uid": uid}, options.FindOne().SetSort(bson.M{"createAt": -1}))
-	if last.Err() == nil {
-		var record models.Task
-		err = last.Decode(&record)
-		if err == nil {
-			deration = time.Now().Local().Sub(*record.CreateAt)
-		}
-	}
 
 	p["uid"] = uid
 	p["createAt"] = time.Now().Local()
-	p["deration"] = deration
 
 	res, err := t.InsertOne(context.Background(), p)
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 
@@ -81,24 +71,24 @@ func (d *DbEngine) AddTask(w http.ResponseWriter, r *http.Request, ps httprouter
 func (d *DbEngine) SetTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	uid, err := primitive.ObjectIDFromHex(r.Header.Get("uid"))
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 	if len(body) == 0 {
-		resultor.RetFail(w, "not has body")
+		resultor.RetFail(w, errors.New("not has body"))
 		return
 	}
 
 	p, err := parsup.ParSup().ConvJSON(body)
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 
@@ -109,7 +99,7 @@ func (d *DbEngine) SetTask(w http.ResponseWriter, r *http.Request, ps httprouter
 	})
 
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 
@@ -126,7 +116,7 @@ func (d *DbEngine) SetTask(w http.ResponseWriter, r *http.Request, ps httprouter
 		bson.M{"$set": p},
 	)
 	if res.Err() != nil {
-		resultor.RetFail(w, res.Err().Error())
+		resultor.RetFail(w, res.Err())
 		return
 	}
 
@@ -137,12 +127,12 @@ func (d *DbEngine) SetTask(w http.ResponseWriter, r *http.Request, ps httprouter
 func (d *DbEngine) RemoveTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	uid, err := primitive.ObjectIDFromHex(r.Header.Get("uid"))
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 	id, err := primitive.ObjectIDFromHex(ps.ByName("id"))
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 
@@ -151,7 +141,7 @@ func (d *DbEngine) RemoveTask(w http.ResponseWriter, r *http.Request, ps httprou
 	res := t.FindOneAndDelete(context.Background(), bson.M{"_id": id, "uid": uid})
 
 	if res.Err() != nil {
-		resultor.RetFail(w, res.Err().Error())
+		resultor.RetFail(w, res.Err())
 		return
 	}
 
@@ -166,7 +156,7 @@ func (d *DbEngine) ListTask(w http.ResponseWriter, r *http.Request, ps httproute
 
 	uid, err := primitive.ObjectIDFromHex(r.Header.Get("uid"))
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 
@@ -177,19 +167,20 @@ func (d *DbEngine) ListTask(w http.ResponseWriter, r *http.Request, ps httproute
 
 	cur, err := t.Find(context.Background(), bson.M{
 		"uid": uid,
-	}, options.Find().SetSort(bson.M{"createAt": -1}).SetSkip(skip).SetLimit(limit))
+	}, options.Find().SetSort(bson.M{"level": -1}).SetSkip(skip).SetLimit(limit))
 
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
 
-	list := make([]models.Task, 0)
+	list := make([]models.MainTask, 0)
 
 	err = cur.All(context.Background(), &list)
 	if err != nil {
-		resultor.RetFail(w, err.Error())
+		resultor.RetFail(w, err)
 		return
 	}
+
 	resultor.RetOk(w, list)
 }
