@@ -93,9 +93,7 @@ func (d *DbEngine) SetTask(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	err = utils.Required(p, map[string]string{
-		"event": "请填写发生了什么",
-		"tid":   "请至少选一个标签",
-		"id":    "ID不能为空",
+		"id": "ID不能为空",
 	})
 
 	if err != nil {
@@ -163,11 +161,14 @@ func (d *DbEngine) ListTask(w http.ResponseWriter, r *http.Request, ps httproute
 	limit, _ := strconv.ParseInt(l, 10, 64)
 	skip, _ := strconv.ParseInt(s, 10, 64)
 
+	done, _ := strconv.ParseBool(q.Get("done"))
+
 	t := d.GetColl(models.TTask)
 
 	cur, err := t.Find(context.Background(), bson.M{
-		"uid": uid,
-	}, options.Find().SetSort(bson.M{"level": -1}).SetSkip(skip).SetLimit(limit))
+		"uid":  uid,
+		"done": done,
+	}, options.Find().SetSort(bson.M{"level": -1, "updateAt": -1, "createAt": -1}).SetSkip(skip).SetLimit(limit))
 
 	if err != nil {
 		resultor.RetFail(w, err)
@@ -182,7 +183,7 @@ func (d *DbEngine) ListTask(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	total, err := t.CountDocuments(context.Background(), bson.M{})
+	total, err := t.CountDocuments(context.Background(), bson.M{"uid": uid})
 
 	if err != nil {
 		resultor.RetFail(w, err)

@@ -28,7 +28,7 @@ func main() {
 		dbinit = flag.Bool("i", false, "init database flag")
 		mongo  = flag.String("m", "mongodb://localhost:27017", "mongod addr flag")
 		db     = flag.String("db", "to-do-list", "database name")
-		ucHost = flag.String("uc", "http://localhost:8011", "user center host")
+		ucHost = flag.String("uc", "https://api.furan.xyz/user-center", "user center host")
 	)
 	flag.Parse()
 
@@ -46,7 +46,7 @@ func main() {
 	router := httprouter.New()
 	//task ctrl
 	router.POST("/v1/task/create", auth.IsLogin(eng.AddTask))
-	router.PUT("/v1/task/update", auth.IsLogin(eng.SetTask))
+	router.PATCH("/v1/task/update", auth.IsLogin(eng.SetTask))
 	router.GET("/v1/task/list", auth.IsLogin(eng.ListTask))
 	router.DELETE("/v1/task/:id", auth.IsLogin(eng.RemoveTask))
 
