@@ -168,7 +168,7 @@ func (d *DbEngine) ListTask(w http.ResponseWriter, r *http.Request, ps httproute
 	cur, err := t.Find(context.Background(), bson.M{
 		"uid":  uid,
 		"done": done,
-	}, options.Find().SetSort(bson.M{"level": -1, "updateAt": -1, "createAt": -1}).SetSkip(skip).SetLimit(limit))
+	}, options.Find().SetSort(bson.M{"level": -1, "createAt": -1}).SetSkip(skip).SetLimit(limit))
 
 	if err != nil {
 		resultor.RetFail(w, err)
