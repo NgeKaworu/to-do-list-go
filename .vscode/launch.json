@@ -10,7 +10,14 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceFolder}/main.go",
-      "args": ["-i=false"]
+      "args": [
+        "-i=${env:DBINIT}",
+        "-l=${env:ADDR}",
+        "-m=${env:MONGO}",
+        "-db=${env:DB}",
+        "-uc=${env:UC}",
+      ],
+      "debugAdapter":"legacy"
     }
   ]
 }

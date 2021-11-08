@@ -6,7 +6,7 @@
   "tasks": [
     {
       "label": "build linux",
-      "command": "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o '${workspaceFolder}/bin/'",
+      "command": "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o '${workspaceFolder}/bin/app'",
       "group": {
         "kind": "build",
         "isDefault": true
