@@ -28,7 +28,7 @@ func main() {
 		dbinit = flag.Bool("i", false, "init database flag")
 		mongo  = flag.String("m", "mongodb://localhost:27017", "mongod addr flag")
 		db     = flag.String("db", "to-do-list", "database name")
-		ucHost = flag.String("uc", "https://api.furan.xyz/user-center", "user center host")
+		ucHost = flag.String("uc", "http://user-center-go", "user center host")
 	)
 	flag.Parse()
 
