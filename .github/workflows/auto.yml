@@ -34,4 +34,6 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           script: | 
             cd todo-list
+            git checkout master
+            git pull
             sh boot.sh
