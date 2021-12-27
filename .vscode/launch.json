@@ -16,6 +16,7 @@
         "-m=${env:MONGO}",
         "-db=${env:DB}",
         "-uc=${env:UC}",
+        "-r=${env:REDIS}",
       ],
       "debugAdapter":"legacy"
     }

@@ -1,4 +1,4 @@
-package engine
+package app
 
 import (
 	"context"
@@ -19,7 +19,7 @@ import (
 )
 
 // AddTask 添加记录
-func (d *DbEngine) AddTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (d *App) AddTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	uid, err := primitive.ObjectIDFromHex(r.Header.Get("uid"))
 	if err != nil {
 		resultor.RetFail(w, err)
@@ -53,7 +53,7 @@ func (d *DbEngine) AddTask(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	t := d.GetColl(models.TTask)
+	t := d.mongo.GetColl(models.TTask)
 
 	p["uid"] = uid
 	p["createAt"] = time.Now().Local()
@@ -68,7 +68,7 @@ func (d *DbEngine) AddTask(w http.ResponseWriter, r *http.Request, ps httprouter
 }
 
 // SetTask 更新记录
-func (d *DbEngine) SetTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (d *App) SetTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	uid, err := primitive.ObjectIDFromHex(r.Header.Get("uid"))
 	if err != nil {
 		resultor.RetFail(w, err)
@@ -101,7 +101,7 @@ func (d *DbEngine) SetTask(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	t := d.GetColl(models.TTask)
+	t := d.mongo.GetColl(models.TTask)
 
 	p["uid"] = uid
 	p["updateAt"] = time.Now().Local()
@@ -122,7 +122,7 @@ func (d *DbEngine) SetTask(w http.ResponseWriter, r *http.Request, ps httprouter
 }
 
 // RemoveTask 删除记录
-func (d *DbEngine) RemoveTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (d *App) RemoveTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	uid, err := primitive.ObjectIDFromHex(r.Header.Get("uid"))
 	if err != nil {
 		resultor.RetFail(w, err)
@@ -134,7 +134,7 @@ func (d *DbEngine) RemoveTask(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	t := d.GetColl(models.TTask)
+	t := d.mongo.GetColl(models.TTask)
 
 	res := t.FindOneAndDelete(context.Background(), bson.M{"_id": id, "uid": uid})
 
@@ -147,7 +147,7 @@ func (d *DbEngine) RemoveTask(w http.ResponseWriter, r *http.Request, ps httprou
 }
 
 // ListTask record列表
-func (d *DbEngine) ListTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (d *App) ListTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	q := r.URL.Query()
 	l := q.Get("limit")
 	s := q.Get("skip")
@@ -163,7 +163,7 @@ func (d *DbEngine) ListTask(w http.ResponseWriter, r *http.Request, ps httproute
 
 	done, _ := strconv.ParseBool(q.Get("done"))
 
-	t := d.GetColl(models.TTask)
+	t := d.mongo.GetColl(models.TTask)
 
 	cur, err := t.Find(context.Background(), bson.M{
 		"uid":  uid,

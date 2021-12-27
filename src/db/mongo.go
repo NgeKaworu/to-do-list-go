@@ -1,4 +1,4 @@
-package engine
+package db
 
 import (
 	"context"
@@ -13,19 +13,19 @@ import (
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
-// DbEngine 关系型数据库引擎
-type DbEngine struct {
-	MgEngine *mongo.Client //关系型数据库引擎
+// MongoClient mongo client
+type MongoClient struct {
+	MgEngine *mongo.Client //mongo client
 	Mdb      string
 }
 
-// NewDbEngine 实例工厂
-func NewDbEngine() *DbEngine {
-	return &DbEngine{}
+// NewMongoClient 实例工厂
+func NewMongoClient() *MongoClient {
+	return &MongoClient{}
 }
 
 // Open 开启连接池
-func (d *DbEngine) Open(mg, mdb string, initdb bool) error {
+func (d *MongoClient) Open(mg, mdb string, initdb bool) error {
 	d.Mdb = mdb
 	ops := options.Client().ApplyURI(mg)
 	p := uint64(39000)
@@ -85,12 +85,12 @@ func (d *DbEngine) Open(mg, mdb string, initdb bool) error {
 }
 
 // GetColl 获取表名
-func (d *DbEngine) GetColl(coll string) *mongo.Collection {
+func (d *MongoClient) GetColl(coll string) *mongo.Collection {
 	col, _ := d.MgEngine.Database(d.Mdb).Collection(coll).Clone()
 	return col
 }
 
 // Close 关闭连接池
-func (d *DbEngine) Close() {
+func (d *MongoClient) Close() {
 	d.MgEngine.Disconnect(context.Background())
 }
